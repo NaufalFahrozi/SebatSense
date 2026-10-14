@@ -36,6 +36,8 @@ class SebatView extends WatchUi.View {
     private var _isChainSmoking as Boolean = false;
     private var _newPackOpened  as Boolean = false;
     private var _warningFlash   as Boolean = false;
+    private var _heartBeat      as Boolean = false;
+    private var _cachedHr       as Number = 75;
 
     function initialize() {
         View.initialize();
@@ -53,6 +55,8 @@ class SebatView extends WatchUi.View {
             _newPackOpened = _dm.autoLog(baseHr);
             doHaptics(_isChainSmoking);
             startCountdown();
+        } else {
+            startDashboardTimer();
         }
     }
 
@@ -72,6 +76,17 @@ class SebatView extends WatchUi.View {
         } else {
             WatchUi.requestUpdate();
         }
+    }
+
+    function startDashboardTimer() as Void {
+        stopTimer();
+        _timer = new Timer.Timer();
+        _timer.start(method(:onDashboardTick), 1000, true);
+    }
+
+    function onDashboardTick() as Void {
+        _heartBeat = !_heartBeat;
+        WatchUi.requestUpdate();
     }
 
     function stopTimer() as Void {
@@ -101,6 +116,7 @@ class SebatView extends WatchUi.View {
                 new Attention.VibeProfile(60, 100)
             ]);
         }
+        startDashboardTimer();
         WatchUi.requestUpdate();
     }
 
@@ -187,6 +203,7 @@ class SebatView extends WatchUi.View {
     // MODE 1: DASHBOARD 5 HALAMAN (MINIMALIS)
     // =========================================================================
     private function drawDashboard(dc as Dc) as Void {
+        drawBezelGauge(dc);
         if (_page == PAGE_BIOMETRIC) {
             drawBiometricPage(dc);
         } else if (_page == PAGE_IMPACT) {
@@ -199,6 +216,51 @@ class SebatView extends WatchUi.View {
             drawSettingsPage(dc);
         }
         drawPageDots(dc);
+    }
+
+    private function drawBezelGauge(dc as Dc) as Void {
+        dc.setPenWidth(3);
+        dc.setColor(0x1F1F1F, Graphics.COLOR_TRANSPARENT);
+        dc.drawCircle(195, 195, 191);
+
+        if (_page == PAGE_BIOMETRIC) {
+            var elapsed = _dm.getSecondsSinceLastSmoke();
+            var phase = _dm.getRecoveryPhase();
+            var phaseClr = (phase == 0) ? 0xFF3D3D : ((phase == 1) ? 0xFF9800 : 0x00E676);
+            if (elapsed < 0 || elapsed >= 7200) {
+                dc.setColor(0x00E676, Graphics.COLOR_TRANSPARENT);
+                dc.drawCircle(195, 195, 191);
+            } else {
+                var recProg = elapsed.toFloat() / 7200.0f;
+                if (recProg < 0.03f) { recProg = 0.03f; }
+                var deg = (recProg * 360.0f).toNumber();
+                dc.setColor(phaseClr, Graphics.COLOR_TRANSPARENT);
+                dc.drawArc(195, 195, 191, Graphics.ARC_CLOCKWISE, 90, (90 - deg + 360) % 360);
+            }
+        } else if (_page == PAGE_STOCK) {
+            var packLeft = _dm.getPackLeft();
+            var packSize = _dm.getPackSize();
+            if (packSize > 0) {
+                var stockProg = packLeft.toFloat() / packSize.toFloat();
+                if (stockProg > 1.0f) { stockProg = 1.0f; }
+                var stockClr = (stockProg > 0.5f) ? 0x00E676 : ((stockProg > 0.2f) ? 0xFF9800 : 0xFF1744);
+                if (stockProg >= 1.0f) {
+                    dc.setColor(stockClr, Graphics.COLOR_TRANSPARENT);
+                    dc.drawCircle(195, 195, 191);
+                } else if (stockProg > 0.02f) {
+                    var deg = (stockProg * 360.0f).toNumber();
+                    dc.setColor(stockClr, Graphics.COLOR_TRANSPARENT);
+                    dc.drawArc(195, 195, 191, Graphics.ARC_CLOCKWISE, 90, (90 - deg + 360) % 360);
+                }
+            }
+        } else if (_page == PAGE_IMPACT || _page == PAGE_MONEY) {
+            var todayCnt = _dm.getTodayCount();
+            if (todayCnt == 0) {
+                dc.setColor(0x00E676, Graphics.COLOR_TRANSPARENT);
+                dc.drawCircle(195, 195, 191);
+            }
+        }
+        dc.setPenWidth(1);
     }
 
     private function drawPageDots(dc as Dc) as Void {
@@ -238,9 +300,16 @@ class SebatView extends WatchUi.View {
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(195, Y_TOP, Graphics.FONT_GLANCE, "STATUS TUBUH", CENTER_HV);
 
-        // TENGAH
+        // TENGAH (Live HR + Pulsing Heart Dot)
+        var hrStr = Lang.format("$1$ bpm", [liveHr]);
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(195, Y_MID, Graphics.FONT_MEDIUM, Lang.format("$1$ bpm", [liveHr]), CENTER_HV);
+        dc.drawText(195, Y_MID, Graphics.FONT_MEDIUM, hrStr, CENTER_HV);
+
+        var tw = dc.getTextWidthInPixels(hrStr, Graphics.FONT_MEDIUM);
+        var dotPulseX = 195 - (tw / 2) - 12;
+        var dotR = _heartBeat ? 4 : 3;
+        dc.setColor(_heartBeat ? 0xFF1744 : 0xB71C1C, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(dotPulseX, Y_MID, dotR);
 
         dc.setColor(phaseClr, Graphics.COLOR_TRANSPARENT);
         dc.drawText(195, Y_SUB, Graphics.FONT_GLANCE, phaseTxt, CENTER_HV);
@@ -383,6 +452,7 @@ class SebatView extends WatchUi.View {
         if (actInfo != null && actInfo.currentHeartRate != null) {
             var rawHr = actInfo.currentHeartRate as Number;
             if (rawHr > 30 && rawHr < 240) {
+                _cachedHr = rawHr;
                 return rawHr;
             }
         }
@@ -396,12 +466,13 @@ class SebatView extends WatchUi.View {
                 if (s != null && s.data != null) {
                     var d = (s.data as Numeric).toNumber();
                     if (d > 30 && d < 240) {
+                        _cachedHr = d;
                         return d;
                     }
                 }
             }
         }
-        return 75;
+        return _cachedHr;
     }
 
     function analyzeImpact() as Void {
@@ -419,18 +490,24 @@ class SebatView extends WatchUi.View {
         var maxHr     = baseHr;
         var maxStress = 0;
 
+        var queryPeriod = elapsed + 300;
+        if (queryPeriod > 21600) { queryPeriod = 21600; }
+
         if ((Toybox has :SensorHistory) && (SensorHistory has :getHeartRateHistory)) {
             var hrIter = SensorHistory.getHeartRateHistory({
-                :period => new Time.Duration(21600),
-                :order  => SensorHistory.ORDER_OLDEST_FIRST
+                :period => new Time.Duration(queryPeriod),
+                :order  => SensorHistory.ORDER_NEWEST_FIRST
             });
             if (hrIter != null) {
                 var samp = hrIter.next();
                 while (samp != null) {
                     if (samp.when != null && samp.data != null) {
                         var t = samp.when.value().toNumber();
+                        if (t < winStart) {
+                            break;
+                        }
                         var bpm = (samp.data as Numeric).toNumber();
-                        if (t >= winStart && t <= winEnd && bpm > maxHr && bpm < 240) {
+                        if (t <= winEnd && bpm > maxHr && bpm < 240) {
                             maxHr = bpm;
                         }
                     }
@@ -441,16 +518,19 @@ class SebatView extends WatchUi.View {
 
         if ((Toybox has :SensorHistory) && (SensorHistory has :getStressHistory)) {
             var stIter = SensorHistory.getStressHistory({
-                :period => new Time.Duration(21600),
-                :order  => SensorHistory.ORDER_OLDEST_FIRST
+                :period => new Time.Duration(queryPeriod),
+                :order  => SensorHistory.ORDER_NEWEST_FIRST
             });
             if (stIter != null) {
                 var samp = stIter.next();
                 while (samp != null) {
                     if (samp.when != null && samp.data != null) {
                         var t = samp.when.value().toNumber();
+                        if (t < winStart) {
+                            break;
+                        }
                         var stv = (samp.data as Numeric).toNumber();
-                        if (t >= winStart && t <= winEnd && stv > maxStress && stv <= 100) {
+                        if (t <= winEnd && stv > maxStress && stv <= 100) {
                             maxStress = stv;
                         }
                     }

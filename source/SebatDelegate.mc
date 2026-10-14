@@ -34,7 +34,7 @@ class SebatDelegate extends WatchUi.BehaviorDelegate {
         return true;
     }
 
-    // ── Touchscreen tap (mirrors START on interactive pages) ─────────────────
+    // ── Touchscreen tap (mirrors START on interactive pages, advances info pages)
     function onTap(clickEvent as WatchUi.ClickEvent) as Boolean {
         if (_view.getMode() == SebatView.MODE_COUNTDOWN) {
             _view.undoAndEnterDashboard();
@@ -47,9 +47,11 @@ class SebatDelegate extends WatchUi.BehaviorDelegate {
             } else if (page == SebatView.PAGE_SETTINGS) {
                 pushSettingsMenu();
                 return true;
+            } else {
+                _view.nextPage();
+                return true;
             }
         }
-        return false;
     }
 
     // ── Swipe gestures → page navigation ─────────────────────────────────────
