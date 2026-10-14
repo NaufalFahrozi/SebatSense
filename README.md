@@ -309,6 +309,6 @@ Bebas digunakan, dipelajari, dan dikembangkan untuk membantu siapapun membangun 
 
 **Dibuat dengan ❤️, ☕, dan 🚬 (yang sedang dikurangi)**<br>
 
-*SebatSense — karena kesadaran adalah langkah pertama menuju hidup yang lebih sehat.*
+*SebatSense — karena kesadaran adalah langkah pertama.*
 
 </div>
