@@ -190,11 +190,7 @@ class SebatView extends WatchUi.View {
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(195, Y_SUB, Graphics.FONT_GLANCE, Lang.format("Sisa $1$/$2$  •  HR +$3$", [packLeft, packSize, dispSpike]), CENTER_HV);
 
-        // BAWAH (y = 285, Tombol Pill Hijau dengan outline)
-        dc.setColor(0x0a2612, Graphics.COLOR_TRANSPARENT);
-        dc.fillRoundedRectangle(95, Y_BOT - 16, 200, 32, 16);
-        dc.setColor(0x1b5e20, Graphics.COLOR_TRANSPARENT);
-        dc.drawRoundedRectangle(95, Y_BOT - 16, 200, 32, 16);
+        // BAWAH (y = 285)
         dc.setColor(0x00E676, Graphics.COLOR_TRANSPARENT);
         dc.drawText(195, Y_BOT, Graphics.FONT_GLANCE, Lang.format("Tap: Batal ($1$s)", [_countdownSec]), CENTER_HV);
     }
@@ -203,7 +199,7 @@ class SebatView extends WatchUi.View {
     // MODE 1: DASHBOARD 5 HALAMAN (MINIMALIS)
     // =========================================================================
     private function drawDashboard(dc as Dc) as Void {
-        drawBezelGauge(dc);
+        drawPageDots(dc);
         if (_page == PAGE_BIOMETRIC) {
             drawBiometricPage(dc);
         } else if (_page == PAGE_IMPACT) {
@@ -215,64 +211,18 @@ class SebatView extends WatchUi.View {
         } else {
             drawSettingsPage(dc);
         }
-        drawPageDots(dc);
-    }
-
-    private function drawBezelGauge(dc as Dc) as Void {
-        dc.setPenWidth(3);
-        dc.setColor(0x1F1F1F, Graphics.COLOR_TRANSPARENT);
-        dc.drawCircle(195, 195, 191);
-
-        if (_page == PAGE_BIOMETRIC) {
-            var elapsed = _dm.getSecondsSinceLastSmoke();
-            var phase = _dm.getRecoveryPhase();
-            var phaseClr = (phase == 0) ? 0xFF3D3D : ((phase == 1) ? 0xFF9800 : 0x00E676);
-            if (elapsed < 0 || elapsed >= 7200) {
-                dc.setColor(0x00E676, Graphics.COLOR_TRANSPARENT);
-                dc.drawCircle(195, 195, 191);
-            } else {
-                var recProg = elapsed.toFloat() / 7200.0f;
-                if (recProg < 0.03f) { recProg = 0.03f; }
-                var deg = (recProg * 360.0f).toNumber();
-                dc.setColor(phaseClr, Graphics.COLOR_TRANSPARENT);
-                dc.drawArc(195, 195, 191, Graphics.ARC_CLOCKWISE, 90, (90 - deg + 360) % 360);
-            }
-        } else if (_page == PAGE_STOCK) {
-            var packLeft = _dm.getPackLeft();
-            var packSize = _dm.getPackSize();
-            if (packSize > 0) {
-                var stockProg = packLeft.toFloat() / packSize.toFloat();
-                if (stockProg > 1.0f) { stockProg = 1.0f; }
-                var stockClr = (stockProg > 0.5f) ? 0x00E676 : ((stockProg > 0.2f) ? 0xFF9800 : 0xFF1744);
-                if (stockProg >= 1.0f) {
-                    dc.setColor(stockClr, Graphics.COLOR_TRANSPARENT);
-                    dc.drawCircle(195, 195, 191);
-                } else if (stockProg > 0.02f) {
-                    var deg = (stockProg * 360.0f).toNumber();
-                    dc.setColor(stockClr, Graphics.COLOR_TRANSPARENT);
-                    dc.drawArc(195, 195, 191, Graphics.ARC_CLOCKWISE, 90, (90 - deg + 360) % 360);
-                }
-            }
-        } else if (_page == PAGE_IMPACT || _page == PAGE_MONEY) {
-            var todayCnt = _dm.getTodayCount();
-            if (todayCnt == 0) {
-                dc.setColor(0x00E676, Graphics.COLOR_TRANSPARENT);
-                dc.drawCircle(195, 195, 191);
-            }
-        }
-        dc.setPenWidth(1);
     }
 
     private function drawPageDots(dc as Dc) as Void {
-        var dotX = 370;
-        var dotsY = [163, 179, 195, 211, 227];
+        var dotY = 56;
+        var dotsX = [167, 181, 195, 209, 223];
         for (var i = 0; i < TOTAL_PAGES; i++) {
             if (i == _page) {
                 dc.setColor(0xFF9800, Graphics.COLOR_TRANSPARENT);
-                dc.fillCircle(dotX, dotsY[i], 4);
+                dc.fillCircle(dotsX[i], dotY, 3);
             } else {
-                dc.setColor(0x333333, Graphics.COLOR_TRANSPARENT);
-                dc.fillCircle(dotX, dotsY[i], 2);
+                dc.setColor(0x444444, Graphics.COLOR_TRANSPARENT);
+                dc.fillCircle(dotsX[i], dotY, 2);
             }
         }
     }
@@ -386,11 +336,7 @@ class SebatView extends WatchUi.View {
         dc.setColor(0xFFD54F, Graphics.COLOR_TRANSPARENT);
         dc.drawText(195, Y_SUB, Graphics.FONT_GLANCE, Lang.format("Prediksi habis: $1$", [runOut]), CENTER_HV);
 
-        // BAWAH (Tombol Pill Biru dengan Border)
-        dc.setColor(0x0A2540, Graphics.COLOR_TRANSPARENT);
-        dc.fillRoundedRectangle(95, Y_BOT - 16, 200, 32, 16);
-        dc.setColor(0x1565C0, Graphics.COLOR_TRANSPARENT);
-        dc.drawRoundedRectangle(95, Y_BOT - 16, 200, 32, 16);
+        // BAWAH
         dc.setColor(0x64B5F6, Graphics.COLOR_TRANSPARENT);
         dc.drawText(195, Y_BOT, Graphics.FONT_GLANCE, "START: Menu Stok", CENTER_HV);
     }
@@ -435,11 +381,7 @@ class SebatView extends WatchUi.View {
         dc.setColor(0xFFD54F, Graphics.COLOR_TRANSPARENT);
         dc.drawText(195, Y_SUB, Graphics.FONT_GLANCE, Lang.format("Isi $1$  •  $2$/btg", [packSize, _dm.formatRupiah(pricePerCig)]), CENTER_HV);
 
-        // BAWAH (Tombol Pill Biru dengan Border)
-        dc.setColor(0x0A2540, Graphics.COLOR_TRANSPARENT);
-        dc.fillRoundedRectangle(95, Y_BOT - 16, 200, 32, 16);
-        dc.setColor(0x1565C0, Graphics.COLOR_TRANSPARENT);
-        dc.drawRoundedRectangle(95, Y_BOT - 16, 200, 32, 16);
+        // BAWAH
         dc.setColor(0x64B5F6, Graphics.COLOR_TRANSPARENT);
         dc.drawText(195, Y_BOT, Graphics.FONT_GLANCE, "START: Ubah Data", CENTER_HV);
     }
