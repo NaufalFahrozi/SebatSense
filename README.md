@@ -27,6 +27,28 @@ Yang membedakan SebatSense dari tracker biasa: **biometric reality-slap**. Setia
 
 ---
 
+## 💡 Kapan Waktu Terbaik Membuka Aplikasi?
+
+> **Rekomendasi Utama: Buka jam tangan PAS mau bakar rokok (saat nyalain korek / sebelum hisapan pertama).**
+
+### 🔄 Alur Penggunaan Alami:
+1. **Pas Mau Bakar Rokok**:
+   - Ketuk widget **SebatSense** di jam tanganmu.
+   - Jam tangan akan bergetar (*haptic feedback*), stok berkurang otomatis (`16/16` $\rightarrow$ `15/16`), dan jumlah batang hari ini bertambah (`Batang #1`).
+   - Jam secara otomatis mengambil **denyut nadi normal kamu saat itu (*Baseline HR*)** tepat sebelum nikotin masuk ke aliran darah.
+   - Layar countdown 3 detik berputar dan **otomatis menutup sendiri**. Tidak perlu menekan tombol selesai/back, langsung hisap rokokmu dengan santai!
+
+2. **Saat Menghisap Rokok**:
+   - Dalam hitungan detik setelah hisapan pertama, nikotin mulai memicu respons kardiovaskular.
+   - Sensor optik Garmin di pergelangan tanganmu akan merekam data biometrik secara otomatis di latar belakang selama 25 menit ke depan (kenaikan denyut nadi & lonjakan stres).
+
+3. **Pas Mau Merokok Batang Berikutnya**:
+   - Saat kamu membuka SebatSense lagi untuk batang selanjutnya, app langsung menganalisis data sensor 25 menit setelah rokok sebelumnya dan menyajikan **Tamparan Realita**: seberapa tinggi denyut nadimu melonjak (*HR Spike*), level stres puncak, dan ekstra detak jantung akibat rokok tadi.
+
+*(Bagaimana kalau lupa dan baru buka app setelah selesai merokok? Tetap aman! Stok dan rupiah tetap tercatat akurat, hanya saja baseline denyut nadi awal sudah terlanjur naik karena nikotin).*
+
+---
+
 ## 📱 Tampilan & Fitur
 
 ### 🔭 Glance View (0 Klik)
