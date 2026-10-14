@@ -35,3 +35,4 @@ Thumbs.db
 # Temporary files & logs
 *.tmp
 *.log
+*.bat
