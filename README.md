@@ -63,35 +63,42 @@ Selama 3 detik countdown berlangsung, tampilan menunjukkan:
 
 ### ↩️ Undo & Dashboard Interaktif (Tap dalam 3 Detik)
 
-Tap layar atau tekan START selama countdown → **log dibatalkan (undo)** + masuk **Dashboard 3 halaman**:
+Tap layar atau tekan START selama countdown → **log dibatalkan (undo)** + masuk **Dashboard 5 Halaman Minimalis** (geser atas/bawah/kiri/kanan atau gunakan tombol UP/DOWN):
 
-#### 📊 Halaman 1: Tamparan Biometrik
+#### 🩺 Halaman 1: Status Tubuh (Biometrics)
+- Live Heart Rate (bpm) dari sensor jam tangan
+- Status fase pemulihan biologis:
+  - 🔴 `HR & Tensi Naik` (< 20 menit)
+  - 🟠 `CO Darah Tinggi` (20–120 menit)
+  - 🟢 `O2 & HR Pulih` / `Paru Aman` (> 120 menit)
+- Countdown pemulihan detak jantung & pembersihan CO
 
-- Live HR dari sensor jam tangan
-- Recovery arc di bezel (progress pemulihan real-time)
-- HR baseline → peak spike dari rokok terakhir
-- Peak Stress (0–100)
-- Total ekstra detak hari ini
-- Estimasi waktu kardio yang terbuang
-- Countdown menit hingga HR kembali normal
+#### 🩸 Halaman 2: Dampak Rokok (Reality-Slap)
+- Lonjakan denyut nadi (*HR Spike*) dari rokok terakhir (`+X bpm`)
+- Tingkat stres puncak (`X/100`) & akumulasi ekstra detak jantung hari ini
+- Estimasi menit waktu kardio yang terbuang
+- Status hijau aman dan bersih jika belum merokok hari ini
 
-#### 📦 Halaman 2: Stok, Prediksi & Finansial
-
-- Progress bar stok visual (hijau→oranye→merah)
-- Rata-rata jeda antar rokok (EMA)
-- Prediksi jam kehabisan stok (`~HH:MM`)
-- Biaya hari ini & bulan ini (Rp)
-- Tekan **START** → Menu Aksi:
+#### 📦 Halaman 3: Sisa Bungkus & Prediksi Stok
+- Sisa batang per bungkus (`X / Y`) dengan indikator warna stok rendah
+- Prediksi jam bungkus habis berdasarkan EMA interval konsumsi (`~HH:MM`)
+- **START** atau **Tap Pill**: Buka *Menu Aksi Rokok*
   - `Catat 1 Batang Manual`
   - `Buka Bungkus Baru (Reset Stok)`
   - `Kurangi 1 Catatan (-1)`
 
-#### ⚙️ Halaman 3: Pengaturan
+#### 💸 Halaman 4: Uang Terbakar (Finansial)
+- Total uang terbakar hari ini (Rp)
+- Jumlah batang yang dikonsumsi hari ini
+- Estimasi total pengeluaran rokok bulan berjalan (Rp)
 
-- Isi per bungkus: `12 / 16 / 20 batang`
-- Harga per bungkus: `Rp 25.000` s/d `Rp 50.000`
-- Reset data hari ini
-- Tekan **START** → Menu Pengaturan
+#### ⚙️ Halaman 5: Pengaturan
+- Harga per bungkus aktif & harga per batang
+- Konfigurasi isi per bungkus: `12 / 16 / 20 batang`
+- **START** atau **Tap Pill**: Buka *Menu Pengaturan*
+  - Ubah isi bungkus
+  - Ubah harga bungkus (`Rp 25.000` s/d `Rp 50.000`)
+  - Reset hitungan hari ini
 
 ---
 

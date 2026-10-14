@@ -26,7 +26,7 @@ class SebatMenuDelegate extends WatchUi.Menu2InputDelegate {
         var dm = _view.getDataManager();
 
         if (_menuType == :stockMenu) {
-            if      (id == :manualLog)   { dm.manualLog();  }
+            if      (id == :manualLog)   { dm.manualLog(_view.getCurrentHr()); }
             else if (id == :openNewPack) { dm.openNewPack(); }
             else if (id == :removeOne)   { dm.removeOneLog(); }
             _view.reloadData();

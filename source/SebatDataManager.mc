@@ -1,34 +1,27 @@
 import Toybox.Application;
+import Toybox.Application.Storage;
 import Toybox.Lang;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SebatDataManager  (:glance)
-// Pure data-layer: Storage reads/writes + calculations only.
-// Intentionally avoids Activity, SensorHistory, Attention – all non-glance APIs.
-// Those operations live in SebatView.mc.
-// ─────────────────────────────────────────────────────────────────────────────
 (:glance)
 class SebatDataManager {
 
-    // ── Storage Keys ──────────────────────────────────────────────────────────
-    private static const KEY_PACK_SIZE        as String = "packSize";
-    private static const KEY_PACK_PRICE       as String = "packPrice";
-    private static const KEY_PACK_LEFT        as String = "packLeft";
-    private static const KEY_TODAY_COUNT      as String = "todayCount";
-    private static const KEY_MONTH_COUNT      as String = "monthCount";
-    private static const KEY_LAST_LOG_DAY     as String = "lastLogDay";
-    private static const KEY_LAST_LOG_MONTH   as String = "lastLogMonth";
-    private static const KEY_LAST_SMOKE_TIME  as String = "lastSmokeTime";
+    private static const KEY_PACK_SIZE         as String = "packSize";
+    private static const KEY_PACK_PRICE        as String = "packPrice";
+    private static const KEY_PACK_LEFT         as String = "packLeft";
+    private static const KEY_TODAY_COUNT       as String = "todayCount";
+    private static const KEY_MONTH_COUNT       as String = "monthCount";
+    private static const KEY_LAST_LOG_DAY      as String = "lastLogDay";
+    private static const KEY_LAST_LOG_MONTH    as String = "lastLogMonth";
+    private static const KEY_LAST_SMOKE_TIME   as String = "lastSmokeTime";
     private static const KEY_LAST_SMOKE_BASEHR as String = "lastSmokeBaseHr";
-    private static const KEY_AVG_INTERVAL_SEC as String = "avgIntervalSec";
-    private static const KEY_LAST_HR_SPIKE    as String = "lastHrSpike";
-    private static const KEY_LAST_PEAK_STRESS as String = "lastPeakStress";
+    private static const KEY_AVG_INTERVAL_SEC  as String = "avgIntervalSec";
+    private static const KEY_LAST_HR_SPIKE     as String = "lastHrSpike";
+    private static const KEY_LAST_PEAK_STRESS  as String = "lastPeakStress";
     private static const KEY_TODAY_EXTRA_BEATS as String = "todayExtraBeats";
-    private static const KEY_PREV_SNAPSHOT    as String = "previousStateSnapshot";
+    private static const KEY_PREV_SNAPSHOT     as String = "previousStateSnapshot";
 
-    // ── Cached In-Memory Fields ───────────────────────────────────────────────
     private var _packSize        as Number = 16;
     private var _packPrice       as Number = 36000;
     private var _packLeft        as Number = 16;
@@ -38,183 +31,160 @@ class SebatDataManager {
     private var _lastLogMonth    as Number = 0;
     private var _lastSmokeTime   as Number = 0;
     private var _lastSmokeBaseHr as Number = 75;
-    private var _avgIntervalSec  as Number = 5400; // 90 min default
+    private var _avgIntervalSec  as Number = 5400;
     private var _lastHrSpike     as Number = 0;
     private var _lastPeakStress  as Number = 0;
     private var _todayExtraBeats as Number = 0;
 
-    // ── Constructor ───────────────────────────────────────────────────────────
-    (:glance)
     function initialize() {
         loadAll();
     }
 
-    // ── Load All State From Storage ───────────────────────────────────────────
-    (:glance)
     function loadAll() as Void {
-        var s = Application.Storage;
-
-        var v = s.getValue(KEY_PACK_SIZE) as Number?;
+        var v = Storage.getValue(KEY_PACK_SIZE) as Number?;
         _packSize = (v != null) ? v : 16;
 
-        v = s.getValue(KEY_PACK_PRICE) as Number?;
+        v = Storage.getValue(KEY_PACK_PRICE) as Number?;
         _packPrice = (v != null) ? v : 36000;
 
-        v = s.getValue(KEY_PACK_LEFT) as Number?;
+        v = Storage.getValue(KEY_PACK_LEFT) as Number?;
         _packLeft = (v != null) ? v : _packSize;
 
-        v = s.getValue(KEY_TODAY_COUNT) as Number?;
+        v = Storage.getValue(KEY_TODAY_COUNT) as Number?;
         _todayCount = (v != null) ? v : 0;
 
-        v = s.getValue(KEY_MONTH_COUNT) as Number?;
+        v = Storage.getValue(KEY_MONTH_COUNT) as Number?;
         _monthCount = (v != null) ? v : 0;
 
-        v = s.getValue(KEY_LAST_LOG_DAY) as Number?;
+        v = Storage.getValue(KEY_LAST_LOG_DAY) as Number?;
         _lastLogDay = (v != null) ? v : 0;
 
-        v = s.getValue(KEY_LAST_LOG_MONTH) as Number?;
+        v = Storage.getValue(KEY_LAST_LOG_MONTH) as Number?;
         _lastLogMonth = (v != null) ? v : 0;
 
-        v = s.getValue(KEY_LAST_SMOKE_TIME) as Number?;
+        v = Storage.getValue(KEY_LAST_SMOKE_TIME) as Number?;
         _lastSmokeTime = (v != null) ? v : 0;
 
-        v = s.getValue(KEY_LAST_SMOKE_BASEHR) as Number?;
+        v = Storage.getValue(KEY_LAST_SMOKE_BASEHR) as Number?;
         _lastSmokeBaseHr = (v != null) ? v : 75;
 
-        v = s.getValue(KEY_AVG_INTERVAL_SEC) as Number?;
+        v = Storage.getValue(KEY_AVG_INTERVAL_SEC) as Number?;
         _avgIntervalSec = (v != null) ? v : 5400;
 
-        v = s.getValue(KEY_LAST_HR_SPIKE) as Number?;
+        v = Storage.getValue(KEY_LAST_HR_SPIKE) as Number?;
         _lastHrSpike = (v != null) ? v : 0;
 
-        v = s.getValue(KEY_LAST_PEAK_STRESS) as Number?;
+        v = Storage.getValue(KEY_LAST_PEAK_STRESS) as Number?;
         _lastPeakStress = (v != null) ? v : 0;
 
-        v = s.getValue(KEY_TODAY_EXTRA_BEATS) as Number?;
+        v = Storage.getValue(KEY_TODAY_EXTRA_BEATS) as Number?;
         _todayExtraBeats = (v != null) ? v : 0;
     }
 
-    // ── Getters ───────────────────────────────────────────────────────────────
-    (:glance) function getPackSize()        as Number { return _packSize;        }
-    (:glance) function getPackPrice()       as Number { return _packPrice;       }
-    (:glance) function getPackLeft()        as Number { return _packLeft;        }
-    (:glance) function getTodayCount()      as Number { return _todayCount;      }
-    (:glance) function getMonthCount()      as Number { return _monthCount;      }
-    (:glance) function getLastSmokeTime()   as Number { return _lastSmokeTime;   }
-    (:glance) function getLastSmokeBaseHr() as Number { return _lastSmokeBaseHr; }
-    (:glance) function getAvgIntervalSec()  as Number { return _avgIntervalSec;  }
-    (:glance) function getLastHrSpike()     as Number { return _lastHrSpike;     }
-    (:glance) function getLastPeakStress()  as Number { return _lastPeakStress;  }
-    (:glance) function getTodayExtraBeats() as Number { return _todayExtraBeats; }
+    function getPackSize() as Number        { return _packSize; }
+    function getPackPrice() as Number       { return _packPrice; }
+    function getPackLeft() as Number        { return _packLeft; }
+    function getTodayCount() as Number      { return _todayCount; }
+    function getMonthCount() as Number      { return _monthCount; }
+    function getLastSmokeTime() as Number   { return _lastSmokeTime; }
+    function getLastSmokeBaseHr() as Number { return _lastSmokeBaseHr; }
+    function getAvgIntervalSec() as Number  { return _avgIntervalSec; }
+    function getLastHrSpike() as Number     { return _lastHrSpike; }
+    function getLastPeakStress() as Number  { return _lastPeakStress; }
+    function getTodayExtraBeats() as Number { return _todayExtraBeats; }
 
-    // ── Setters ───────────────────────────────────────────────────────────────
-    (:glance)
     function setLastHrSpike(v as Number) as Void {
         _lastHrSpike = v;
-        Application.Storage.setValue(KEY_LAST_HR_SPIKE, v);
+        Storage.setValue(KEY_LAST_HR_SPIKE, v);
     }
 
-    (:glance)
     function setLastPeakStress(v as Number) as Void {
         _lastPeakStress = v;
-        Application.Storage.setValue(KEY_LAST_PEAK_STRESS, v);
+        Storage.setValue(KEY_LAST_PEAK_STRESS, v);
     }
 
-    (:glance)
     function setPackSize(size as Number) as Void {
         _packSize = size;
-        Application.Storage.setValue(KEY_PACK_SIZE, _packSize);
+        Storage.setValue(KEY_PACK_SIZE, _packSize);
     }
 
-    (:glance)
     function setPackPrice(price as Number) as Void {
         _packPrice = price;
-        Application.Storage.setValue(KEY_PACK_PRICE, _packPrice);
+        Storage.setValue(KEY_PACK_PRICE, _packPrice);
     }
 
-    // ── Midnight Rollover ─────────────────────────────────────────────────────
-    (:glance)
     function checkRollover() as Void {
-        var now      = Time.now();
-        var info     = Gregorian.info(now, Time.FORMAT_SHORT);
-        var year     = info.year as Number;
-        var month    = info.month as Number;
-        var day      = info.day as Number;
-        var currDay  = year * 10000 + month * 100 + day;
-        var currMon  = month;
+        var now = Time.now();
+        var info = Gregorian.info(now, Time.FORMAT_SHORT);
+        var year = info.year as Number;
+        var month = info.month as Number;
+        var day = info.day as Number;
+        var currDay = (year * 10000) + (month * 100) + day;
+        var currMon = month;
 
-        if (_lastLogDay != 0 && currDay != _lastLogDay) {
-            _todayCount      = 0;
-            _todayExtraBeats = 0;
-            Application.Storage.setValue(KEY_TODAY_COUNT,       _todayCount);
-            Application.Storage.setValue(KEY_TODAY_EXTRA_BEATS, _todayExtraBeats);
+        if (_lastLogDay != currDay) {
+            if (_lastLogDay != 0) {
+                _todayCount = 0;
+                _todayExtraBeats = 0;
+                Storage.setValue(KEY_TODAY_COUNT, _todayCount);
+                Storage.setValue(KEY_TODAY_EXTRA_BEATS, _todayExtraBeats);
 
-            if (currMon != _lastLogMonth) {
-                _monthCount = 0;
-                Application.Storage.setValue(KEY_MONTH_COUNT, _monthCount);
+                if (currMon != _lastLogMonth) {
+                    _monthCount = 0;
+                    Storage.setValue(KEY_MONTH_COUNT, _monthCount);
+                }
             }
+            _lastLogDay = currDay;
+            _lastLogMonth = currMon;
+            Storage.setValue(KEY_LAST_LOG_DAY, _lastLogDay);
+            Storage.setValue(KEY_LAST_LOG_MONTH, _lastLogMonth);
         }
-
-        _lastLogDay   = currDay;
-        _lastLogMonth = currMon;
-        Application.Storage.setValue(KEY_LAST_LOG_DAY,   _lastLogDay);
-        Application.Storage.setValue(KEY_LAST_LOG_MONTH, _lastLogMonth);
     }
 
-    // ── Chain-Smoking Check (<30 min since last smoke) ────────────────────────
-    (:glance)
     function isChainSmoking() as Boolean {
-        if (_lastSmokeTime == 0) { return false; }
+        if (_lastSmokeTime <= 0) { return false; }
         var elapsed = Time.now().value().toNumber() - _lastSmokeTime;
-        return (elapsed < 1800);
+        return (elapsed >= 0 && elapsed < 1800);
     }
 
-    // ── Seconds Since Last Smoke ──────────────────────────────────────────────
-    (:glance)
     function getSecondsSinceLastSmoke() as Number {
-        if (_lastSmokeTime == 0) { return 0; }
-        return Time.now().value().toNumber() - _lastSmokeTime;
+        if (_lastSmokeTime <= 0) { return -1; }
+        var diff = Time.now().value().toNumber() - _lastSmokeTime;
+        return (diff >= 0) ? diff : 0;
     }
 
-    // ── Recovery Phase  0=Red(<20m)  1=Orange(20-120m)  2=Green(>120m) ───────
-    (:glance)
     function getRecoveryPhase() as Number {
         var e = getSecondsSinceLastSmoke();
-        if (e == 0)   { return 0; }
-        if (e < 1200) { return 0; }
-        if (e < 7200) { return 1; }
-        return 2;
+        if (e < 0) { return 2; }      // Belum merokok = Fase 2 (Hijau / Aman)
+        if (e < 1200) { return 0; }   // < 20 menit = Fase 0 (Merah / HR Naik)
+        if (e < 7200) { return 1; }   // 20-120 menit = Fase 1 (Oranye / CO Tinggi)
+        return 2;                     // > 120 menit = Fase 2 (Hijau / Pulih)
     }
 
-    // ── EMA Predicted Run-Out Clock "~HH:MM" ─────────────────────────────────
-    (:glance)
     function getPredictedRunOutTime() as String {
-        if (_packLeft <= 0)       { return "Habis"; }
+        if (_packLeft <= 0) { return "Habis"; }
         if (_avgIntervalSec <= 0) { return "--:--"; }
 
         var secUntilOut = _packLeft * _avgIntervalSec;
         var futureEpoch = Time.now().value().toNumber() + secUntilOut;
-        var futureMom   = new Time.Moment(futureEpoch);
-        var fi          = Gregorian.info(futureMom, Time.FORMAT_SHORT);
+        var futureMom = new Time.Moment(futureEpoch);
+        var fi = Gregorian.info(futureMom, Time.FORMAT_SHORT);
         return Lang.format("~$1$:$2$", [fi.hour.format("%02d"), fi.min.format("%02d")]);
     }
 
-    // ── Format Elapsed "Xj Ym lalu" ──────────────────────────────────────────
-    (:glance)
     function formatElapsed(seconds as Number) as String {
-        if (seconds <= 0) { return "Baru saja"; }
+        if (seconds < 0) { return "Belum sebat"; }
+        if (seconds < 60) { return "Baru saja"; }
         var h = seconds / 3600;
         var m = (seconds % 3600) / 60;
         if (h > 0) {
             return Lang.format("$1$j $2$m lalu", [h, m]);
         }
-        return Lang.format("$1$ mnt lalu", [m]);
+        return Lang.format("$1$m lalu", [m]);
     }
 
-    // ── Format Rupiah "Rp 36.000" ─────────────────────────────────────────────
-    (:glance)
     function formatRupiah(amount as Number) as String {
-        if (amount < 0)    { amount = 0; }
+        if (amount < 0) { amount = 0; }
         if (amount < 1000) { return Lang.format("Rp $1$", [amount]); }
         var t = amount / 1000;
         var r = amount % 1000;
@@ -226,21 +196,16 @@ class SebatDataManager {
         return Lang.format("Rp $1$.$2$", [t, r.format("%03d")]);
     }
 
-    // ── Today / Monthly Cost ──────────────────────────────────────────────────
-    (:glance)
     function getTodayCost() as Number {
-        if (_packSize == 0) { return 0; }
-        return _todayCount * (_packPrice / _packSize);
+        if (_packSize <= 0) { return 0; }
+        return (_todayCount * _packPrice) / _packSize;
     }
 
-    (:glance)
     function getMonthlyCost() as Number {
-        if (_packSize == 0) { return 0; }
-        return _monthCount * (_packPrice / _packSize);
+        if (_packSize <= 0) { return 0; }
+        return (_monthCount * _packPrice) / _packSize;
     }
 
-    // ── Snapshot Save (before auto-log, enables undo) ─────────────────────────
-    (:glance)
     function saveSnapshot() as Void {
         var snap = {
             "packLeft"        => _packLeft,
@@ -250,154 +215,145 @@ class SebatDataManager {
             "lastSmokeBaseHr" => _lastSmokeBaseHr,
             "avgIntervalSec"  => _avgIntervalSec,
             "todayExtraBeats" => _todayExtraBeats
-        } as Dictionary<String, Number>;
-        Application.Storage.setValue(KEY_PREV_SNAPSHOT, snap);
+        };
+        Storage.setValue(KEY_PREV_SNAPSHOT, snap);
     }
 
-    // ── Snapshot Restore (undo) ───────────────────────────────────────────────
-    (:glance)
     function restoreSnapshot() as Void {
-        var snap = Application.Storage.getValue(KEY_PREV_SNAPSHOT) as Dictionary?;
+        var snap = Storage.getValue(KEY_PREV_SNAPSHOT) as Dictionary?;
         if (snap == null) { return; }
 
         var v = snap.get("packLeft") as Number?;
-        if (v != null) { _packLeft = v; Application.Storage.setValue(KEY_PACK_LEFT, _packLeft); }
+        if (v != null) { _packLeft = v; Storage.setValue(KEY_PACK_LEFT, _packLeft); }
 
         v = snap.get("todayCount") as Number?;
-        if (v != null) { _todayCount = v; Application.Storage.setValue(KEY_TODAY_COUNT, _todayCount); }
+        if (v != null) { _todayCount = v; Storage.setValue(KEY_TODAY_COUNT, _todayCount); }
 
         v = snap.get("monthCount") as Number?;
-        if (v != null) { _monthCount = v; Application.Storage.setValue(KEY_MONTH_COUNT, _monthCount); }
+        if (v != null) { _monthCount = v; Storage.setValue(KEY_MONTH_COUNT, _monthCount); }
 
         v = snap.get("lastSmokeTime") as Number?;
-        if (v != null) { _lastSmokeTime = v; Application.Storage.setValue(KEY_LAST_SMOKE_TIME, _lastSmokeTime); }
+        if (v != null) { _lastSmokeTime = v; Storage.setValue(KEY_LAST_SMOKE_TIME, _lastSmokeTime); }
 
         v = snap.get("lastSmokeBaseHr") as Number?;
-        if (v != null) { _lastSmokeBaseHr = v; Application.Storage.setValue(KEY_LAST_SMOKE_BASEHR, _lastSmokeBaseHr); }
+        if (v != null) { _lastSmokeBaseHr = v; Storage.setValue(KEY_LAST_SMOKE_BASEHR, _lastSmokeBaseHr); }
 
         v = snap.get("avgIntervalSec") as Number?;
-        if (v != null) { _avgIntervalSec = v; Application.Storage.setValue(KEY_AVG_INTERVAL_SEC, _avgIntervalSec); }
+        if (v != null) { _avgIntervalSec = v; Storage.setValue(KEY_AVG_INTERVAL_SEC, _avgIntervalSec); }
 
         v = snap.get("todayExtraBeats") as Number?;
-        if (v != null) { _todayExtraBeats = v; Application.Storage.setValue(KEY_TODAY_EXTRA_BEATS, _todayExtraBeats); }
+        if (v != null) { _todayExtraBeats = v; Storage.setValue(KEY_TODAY_EXTRA_BEATS, _todayExtraBeats); }
     }
 
-    // ── Auto-Log One Cigarette (saves snapshot first) ─────────────────────────
-    // Returns true if a new pack was auto-opened.
-    (:glance)
     function autoLog(baseHr as Number) as Boolean {
         saveSnapshot();
 
-        // EMA interval update (skip sleep gaps)
+        var nowSec = Time.now().value().toNumber();
         if (_lastSmokeTime > 0) {
-            var nowSec   = Time.now().value().toNumber();
             var interval = nowSec - _lastSmokeTime;
             if (interval >= 300 && interval <= 14400) {
-                _avgIntervalSec = ((_avgIntervalSec * 7 + interval * 3) / 10).toNumber();
-                Application.Storage.setValue(KEY_AVG_INTERVAL_SEC, _avgIntervalSec);
+                _avgIntervalSec = ((_avgIntervalSec * 7) + (interval * 3)) / 10;
+                Storage.setValue(KEY_AVG_INTERVAL_SEC, _avgIntervalSec);
             }
         }
 
-        // Decrement pack; auto-open if exhausted
-        _packLeft = _packLeft - 1;
         var newPack = false;
         if (_packLeft <= 0) {
             _packLeft = _packSize - 1;
-            newPack   = true;
+            newPack = true;
+        } else {
+            _packLeft -= 1;
         }
-        Application.Storage.setValue(KEY_PACK_LEFT, _packLeft);
 
-        // Counts
-        _todayCount  = _todayCount  + 1;
-        _monthCount  = _monthCount  + 1;
-        Application.Storage.setValue(KEY_TODAY_COUNT,  _todayCount);
-        Application.Storage.setValue(KEY_MONTH_COUNT,  _monthCount);
-
-        // Smoke timestamp + baseline HR
-        _lastSmokeTime   = Time.now().value().toNumber();
+        _todayCount += 1;
+        _monthCount += 1;
+        _lastSmokeTime = nowSec;
         _lastSmokeBaseHr = baseHr;
-        Application.Storage.setValue(KEY_LAST_SMOKE_TIME,  _lastSmokeTime);
-        Application.Storage.setValue(KEY_LAST_SMOKE_BASEHR, _lastSmokeBaseHr);
 
-        // Extra beats (using spike from PREVIOUS smoke analysis)
         var spike = (_lastHrSpike > 0) ? _lastHrSpike : 12;
-        _todayExtraBeats = _todayExtraBeats + (spike * 30);
-        Application.Storage.setValue(KEY_TODAY_EXTRA_BEATS, _todayExtraBeats);
+        _todayExtraBeats += (spike * 30);
+
+        Storage.setValue(KEY_PACK_LEFT, _packLeft);
+        Storage.setValue(KEY_TODAY_COUNT, _todayCount);
+        Storage.setValue(KEY_MONTH_COUNT, _monthCount);
+        Storage.setValue(KEY_LAST_SMOKE_TIME, _lastSmokeTime);
+        Storage.setValue(KEY_LAST_SMOKE_BASEHR, _lastSmokeBaseHr);
+        Storage.setValue(KEY_TODAY_EXTRA_BEATS, _todayExtraBeats);
 
         return newPack;
     }
 
-    // ── Manual Log (no snapshot / no undo) ───────────────────────────────────
-    (:glance)
-    function manualLog() as Boolean {
+    function manualLog(baseHr as Number) as Void {
+        var nowSec = Time.now().value().toNumber();
         if (_lastSmokeTime > 0) {
-            var nowSec   = Time.now().value().toNumber();
             var interval = nowSec - _lastSmokeTime;
             if (interval >= 300 && interval <= 14400) {
-                _avgIntervalSec = ((_avgIntervalSec * 7 + interval * 3) / 10).toNumber();
-                Application.Storage.setValue(KEY_AVG_INTERVAL_SEC, _avgIntervalSec);
+                _avgIntervalSec = ((_avgIntervalSec * 7) + (interval * 3)) / 10;
+                Storage.setValue(KEY_AVG_INTERVAL_SEC, _avgIntervalSec);
             }
         }
 
-        _packLeft = _packLeft - 1;
-        var newPack = false;
         if (_packLeft <= 0) {
             _packLeft = _packSize - 1;
-            newPack   = true;
+        } else {
+            _packLeft -= 1;
         }
-        Application.Storage.setValue(KEY_PACK_LEFT, _packLeft);
 
-        _todayCount = _todayCount + 1;
-        _monthCount = _monthCount + 1;
-        Application.Storage.setValue(KEY_TODAY_COUNT, _todayCount);
-        Application.Storage.setValue(KEY_MONTH_COUNT, _monthCount);
-
-        _lastSmokeTime = Time.now().value().toNumber();
-        Application.Storage.setValue(KEY_LAST_SMOKE_TIME, _lastSmokeTime);
+        _todayCount += 1;
+        _monthCount += 1;
+        _lastSmokeTime = nowSec;
+        _lastSmokeBaseHr = (baseHr > 30 && baseHr < 240) ? baseHr : 75;
 
         var spike = (_lastHrSpike > 0) ? _lastHrSpike : 12;
-        _todayExtraBeats = _todayExtraBeats + (spike * 30);
-        Application.Storage.setValue(KEY_TODAY_EXTRA_BEATS, _todayExtraBeats);
+        _todayExtraBeats += (spike * 30);
 
-        return newPack;
+        Storage.setValue(KEY_PACK_LEFT, _packLeft);
+        Storage.setValue(KEY_TODAY_COUNT, _todayCount);
+        Storage.setValue(KEY_MONTH_COUNT, _monthCount);
+        Storage.setValue(KEY_LAST_SMOKE_TIME, _lastSmokeTime);
+        Storage.setValue(KEY_LAST_SMOKE_BASEHR, _lastSmokeBaseHr);
+        Storage.setValue(KEY_TODAY_EXTRA_BEATS, _todayExtraBeats);
     }
 
-    // ── Open New Pack ─────────────────────────────────────────────────────────
-    (:glance)
     function openNewPack() as Void {
         _packLeft = _packSize;
-        Application.Storage.setValue(KEY_PACK_LEFT, _packLeft);
+        Storage.setValue(KEY_PACK_LEFT, _packLeft);
     }
 
-    // ── Remove One Log (manual correction -1) ─────────────────────────────────
-    (:glance)
     function removeOneLog() as Void {
         if (_todayCount > 0) {
-            _todayCount = _todayCount - 1;
-            Application.Storage.setValue(KEY_TODAY_COUNT, _todayCount);
+            _todayCount -= 1;
+            Storage.setValue(KEY_TODAY_COUNT, _todayCount);
         }
         if (_monthCount > 0) {
-            _monthCount = _monthCount - 1;
-            Application.Storage.setValue(KEY_MONTH_COUNT, _monthCount);
+            _monthCount -= 1;
+            Storage.setValue(KEY_MONTH_COUNT, _monthCount);
         }
         if (_packLeft < _packSize) {
-            _packLeft = _packLeft + 1;
-            Application.Storage.setValue(KEY_PACK_LEFT, _packLeft);
+            _packLeft += 1;
+            Storage.setValue(KEY_PACK_LEFT, _packLeft);
         }
-        if (_todayExtraBeats > 0) {
-            var spike  = (_lastHrSpike > 0) ? _lastHrSpike : 12;
-            var reduce = spike * 30;
-            _todayExtraBeats = (_todayExtraBeats > reduce) ? (_todayExtraBeats - reduce) : 0;
-            Application.Storage.setValue(KEY_TODAY_EXTRA_BEATS, _todayExtraBeats);
+        var spike = (_lastHrSpike > 0) ? _lastHrSpike : 12;
+        var reduce = spike * 30;
+        if (_todayExtraBeats >= reduce) {
+            _todayExtraBeats -= reduce;
+        } else {
+            _todayExtraBeats = 0;
+        }
+        Storage.setValue(KEY_TODAY_EXTRA_BEATS, _todayExtraBeats);
+
+        if (_todayCount == 0) {
+            _lastSmokeTime = 0;
+            Storage.setValue(KEY_LAST_SMOKE_TIME, 0);
         }
     }
 
-    // ── Reset Today's Counters ────────────────────────────────────────────────
-    (:glance)
     function resetToday() as Void {
-        _todayCount      = 0;
+        _todayCount = 0;
         _todayExtraBeats = 0;
-        Application.Storage.setValue(KEY_TODAY_COUNT,       _todayCount);
-        Application.Storage.setValue(KEY_TODAY_EXTRA_BEATS, _todayExtraBeats);
+        _lastSmokeTime = 0;
+        Storage.setValue(KEY_TODAY_COUNT, 0);
+        Storage.setValue(KEY_TODAY_EXTRA_BEATS, 0);
+        Storage.setValue(KEY_LAST_SMOKE_TIME, 0);
     }
 }

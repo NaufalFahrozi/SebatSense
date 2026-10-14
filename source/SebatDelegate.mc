@@ -34,21 +34,36 @@ class SebatDelegate extends WatchUi.BehaviorDelegate {
         return true;
     }
 
-    // ── Touchscreen tap (mirrors START) ───────────────────────────────────────
+    // ── Touchscreen tap (mirrors START on interactive pages) ─────────────────
     function onTap(clickEvent as WatchUi.ClickEvent) as Boolean {
         if (_view.getMode() == SebatView.MODE_COUNTDOWN) {
             _view.undoAndEnterDashboard();
             return true;
+        } else {
+            var page = _view.getPage();
+            if (page == SebatView.PAGE_STOCK) {
+                pushStockMenu();
+                return true;
+            } else if (page == SebatView.PAGE_SETTINGS) {
+                pushSettingsMenu();
+                return true;
+            }
         }
-        return false; // let other gestures propagate in dashboard
+        return false;
     }
 
-    // ── Swipe up → next page ──────────────────────────────────────────────────
+    // ── Swipe gestures → page navigation ─────────────────────────────────────
     function onSwipe(swipeEvent as WatchUi.SwipeEvent) as Boolean {
         if (_view.getMode() == SebatView.MODE_DASHBOARD) {
             var dir = swipeEvent.getDirection();
-            if (dir == WatchUi.SWIPE_UP)   { _view.nextPage();     return true; }
-            if (dir == WatchUi.SWIPE_DOWN) { _view.previousPage(); return true; }
+            if (dir == WatchUi.SWIPE_UP || dir == WatchUi.SWIPE_LEFT) {
+                _view.nextPage();
+                return true;
+            }
+            if (dir == WatchUi.SWIPE_DOWN || dir == WatchUi.SWIPE_RIGHT) {
+                _view.previousPage();
+                return true;
+            }
         }
         return false;
     }
@@ -92,7 +107,7 @@ class SebatDelegate extends WatchUi.BehaviorDelegate {
             WatchUi.SLIDE_UP);
     }
 
-    // ── Settings Menu (Page 3) ────────────────────────────────────────────────
+    // ── Settings Menu (Page 4) ────────────────────────────────────────────────
     private function pushSettingsMenu() as Void {
         var menu = new WatchUi.Menu2({:title => "Pengaturan"});
         menu.addItem(new WatchUi.MenuItem(
