@@ -1,0 +1,7 @@
+project.manifest = manifest.xml
+
+base.sourcePath = source
+base.resourcePath = resources
+
+fr165.sourcePath = $(base.sourcePath)
+fr165.resourcePath = $(base.resourcePath)

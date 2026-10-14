@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<drawables>
+  <!--
+    Place a 70x70 PNG named launcher_icon.png in this folder.
+    Quick-generate via ImageMagick:
+      magick -size 70x70 xc:#1a1a1a -fill "#FF6600" -draw "circle 35,35 35,5"
+             -fill white -font Arial-Bold -pointsize 14
+             -gravity center -annotate 0 "SEBAT" launcher_icon.png
+  -->
+  <bitmap id="LauncherIcon" filename="launcher_icon.png"/>
+</drawables>
