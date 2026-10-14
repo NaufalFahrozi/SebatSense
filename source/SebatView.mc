@@ -179,9 +179,9 @@ class SebatView extends WatchUi.View {
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CX, 58, Graphics.FONT_NUMBER_HOT, _countdownSec.toString(), Graphics.TEXT_JUSTIFY_CENTER);
 
-        // ── TAMPARAN REALITA card  (y=138 → y=285) ────────────────────────────
-        var cY  = 138;
-        var cH  = 147;
+        // ── TAMPARAN REALITA card  (y=126 → y=301) ────────────────────────────
+        var cY  = 126;
+        var cH  = 175;
         dc.setColor(0x1C0000, Graphics.COLOR_TRANSPARENT);
         dc.fillRoundedRectangle(CARD_X, cY, CARD_W, cH, 10);
         dc.setPenWidth(2);
@@ -191,10 +191,10 @@ class SebatView extends WatchUi.View {
 
         // Card title
         dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, cY + 6, Graphics.FONT_XTINY, "TAMPARAN REALITA (Batang Sebelumnya)", Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(CX, cY + 5, Graphics.FONT_XTINY, "TAMPARAN REALITA (Batang Lalu)", Graphics.TEXT_JUSTIFY_CENTER);
 
         dc.setColor(0x550000, Graphics.COLOR_TRANSPARENT);
-        dc.drawLine(CARD_X + 8, cY + 22, CARD_X + CARD_W - 8, cY + 22);
+        dc.drawLine(CARD_X + 8, cY + 28, CARD_X + CARD_W - 8, cY + 28);
 
         var hrSpike    = _dm.getLastHrSpike();
         var peakStress = _dm.getLastPeakStress();
@@ -206,31 +206,31 @@ class SebatView extends WatchUi.View {
         var packLeft   = _dm.getPackLeft();
         var packSize   = _dm.getPackSize();
 
-        var rowY = cY + 27;
+        var rowY = cY + 34;
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
-            Lang.format("HR: $1$  $2$ bpm (+$3$)", [baseHrVal, peakHr, hrSpike]),
+            Lang.format("HR: $1$ -> $2$ bpm (+$3$)", [baseHrVal, peakHr, hrSpike]),
             Graphics.TEXT_JUSTIFY_LEFT);
 
-        rowY += 20;
+        rowY += 27;
         dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
             Lang.format("Peak Stress: $1$ / 100", [peakStress]),
             Graphics.TEXT_JUSTIFY_LEFT);
 
-        rowY += 20;
+        rowY += 27;
         dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
             Lang.format("Ekstra Detak Hari ini: +$1$", [extraBeats]),
             Graphics.TEXT_JUSTIFY_LEFT);
 
-        rowY += 20;
+        rowY += 27;
         dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
             Lang.format("Uang Terbakar: $1$", [_dm.formatRupiah(todayCost)]),
             Graphics.TEXT_JUSTIFY_LEFT);
 
-        rowY += 20;
+        rowY += 27;
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
             Lang.format("Hari ini: $1$ btg  |  Sisa: $2$/$3$ btg", [todayCnt, packLeft, packSize]),
@@ -238,7 +238,7 @@ class SebatView extends WatchUi.View {
 
         // ── Bottom instruction ────────────────────────────────────────────────
         dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 297, Graphics.FONT_XTINY,
+        dc.drawText(CX, 312, Graphics.FONT_XTINY,
             "Tap layar / START = BATAL & Menu",
             Graphics.TEXT_JUSTIFY_CENTER);
     }
@@ -324,9 +324,9 @@ class SebatView extends WatchUi.View {
         dc.setColor(phaseClr, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CX, 118, Graphics.FONT_XTINY, phaseTxt, Graphics.TEXT_JUSTIFY_CENTER);
 
-        // Biometric card (y=136 → y=286)
-        var cY = 136;
-        var cH = 150;
+        // Biometric card (y=132 → y=290)
+        var cY = 132;
+        var cH = 158;
         dc.setColor(0x0D0D20, Graphics.COLOR_TRANSPARENT);
         dc.fillRoundedRectangle(CARD_X, cY, CARD_W, cH, 8);
         dc.setColor(0x222255, Graphics.COLOR_TRANSPARENT);
@@ -340,38 +340,32 @@ class SebatView extends WatchUi.View {
         var peakHr     = baseHrVal + hrSpike;
         var cardioMin  = (hrSpike * todayCnt) / 5;
 
-        var rowY = cY + 8;
+        var rowY = cY + 10;
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
             Lang.format("HR: $1$ -> $2$ bpm (+$3$)", [baseHrVal, peakHr, hrSpike]),
             Graphics.TEXT_JUSTIFY_LEFT);
 
-        rowY += 22;
+        rowY += 28;
         dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
             Lang.format("Peak Stress: $1$ / 100", [peakStress]),
             Graphics.TEXT_JUSTIFY_LEFT);
 
-        rowY += 22;
+        rowY += 28;
         dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
-            Lang.format("Ekstra Detak: +$1$ detak", [extraBeats]),
+            Lang.format("Detak: +$1$  |  Kardio: -$2$m", [extraBeats, cardioMin]),
             Graphics.TEXT_JUSTIFY_LEFT);
 
-        rowY += 22;
+        rowY += 28;
         dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
-            Lang.format("Batang hari ini: $1$ btg", [todayCnt]),
+            Lang.format("Hari ini: $1$ batang", [todayCnt]),
             Graphics.TEXT_JUSTIFY_LEFT);
 
-        rowY += 22;
-        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
-            Lang.format("Est. Waktu Kardio: -$1$ mnt", [cardioMin]),
-            Graphics.TEXT_JUSTIFY_LEFT);
-
-        rowY += 22;
-        var normTxt = "HR sudah pulih";
+        rowY += 28;
+        var normTxt = "Status: HR sudah pulih";
         if (elapsed < 1200) {
             var remMin = (1200 - elapsed) / 60;
             normTxt = Lang.format("HR pulih: $1$ mnt lagi", [remMin]);
@@ -381,7 +375,7 @@ class SebatView extends WatchUi.View {
 
         // Bottom hint
         dc.setColor(0x444444, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, 301, Graphics.FONT_XTINY, "Swipe atas/bawah ganti hal.", Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(CX, 304, Graphics.FONT_XTINY, "Swipe atas/bawah ganti hal.", Graphics.TEXT_JUSTIFY_CENTER);
     }
 
     // ── Page 2: Stock & Financial ─────────────────────────────────────────────
@@ -392,7 +386,6 @@ class SebatView extends WatchUi.View {
 
         var packLeft  = _dm.getPackLeft();
         var packSize  = _dm.getPackSize();
-        var packPrice = _dm.getPackPrice();
         var avgSec    = _dm.getAvgIntervalSec();
         var runOut    = _dm.getPredictedRunOutTime();
         var todayCost = _dm.getTodayCost();
@@ -422,21 +415,21 @@ class SebatView extends WatchUi.View {
             Lang.format("Sisa: $1$ / $2$ btg", [packLeft, packSize]),
             Graphics.TEXT_JUSTIFY_CENTER);
 
-        // Detail card (y=94 → y=286)
-        var cY = 94;
-        var cH = 192;
+        // Detail card (y=92 → y=286)
+        var cY = 92;
+        var cH = 194;
         dc.setColor(0x0D200D, Graphics.COLOR_TRANSPARENT);
         dc.fillRoundedRectangle(CARD_X, cY, CARD_W, cH, 8);
         dc.setColor(0x224422, Graphics.COLOR_TRANSPARENT);
         dc.drawRoundedRectangle(CARD_X, cY, CARD_W, cH, 8);
 
-        var rowY = cY + 8;
+        var rowY = cY + 10;
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
-            Lang.format("Batang hari ini: $1$ btg", [todayCnt]),
+            Lang.format("Hari ini: $1$ btg", [todayCnt]),
             Graphics.TEXT_JUSTIFY_LEFT);
 
-        rowY += 22;
+        rowY += 27;
         dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
         if (avgH > 0) {
             dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
@@ -448,7 +441,7 @@ class SebatView extends WatchUi.View {
                 Graphics.TEXT_JUSTIFY_LEFT);
         }
 
-        rowY += 22;
+        rowY += 27;
         dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
             Lang.format("Prediksi habis: $1$", [runOut]),
@@ -456,33 +449,22 @@ class SebatView extends WatchUi.View {
 
         // Separator
         dc.setColor(0x224422, Graphics.COLOR_TRANSPARENT);
-        dc.drawLine(CARD_X + 8, cY + 80, CARD_X + CARD_W - 8, cY + 80);
+        dc.drawLine(CARD_X + 8, rowY + 25, CARD_X + CARD_W - 8, rowY + 25);
 
-        rowY = cY + 88;
-        dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY, "FINANSIAL:", Graphics.TEXT_JUSTIFY_LEFT);
-
-        rowY += 20;
+        rowY += 31;
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
             Lang.format("Hari ini:    $1$", [_dm.formatRupiah(todayCost)]),
             Graphics.TEXT_JUSTIFY_LEFT);
 
-        rowY += 20;
+        rowY += 26;
         dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
             Lang.format("Bulan ini:   $1$", [_dm.formatRupiah(monCost)]),
             Graphics.TEXT_JUSTIFY_LEFT);
 
-        rowY += 20;
-        var pricePerCig = (packSize > 0) ? (packPrice / packSize) : 0;
-        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CARD_X + 8, rowY, Graphics.FONT_XTINY,
-            Lang.format("Per batang:  $1$", [_dm.formatRupiah(pricePerCig)]),
-            Graphics.TEXT_JUSTIFY_LEFT);
-
-        rowY += 22;
-        dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
+        rowY += 26;
+        dc.setColor(0x55AAFF, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CX, rowY, Graphics.FONT_XTINY, "Tekan START untuk Menu Aksi", Graphics.TEXT_JUSTIFY_CENTER);
 
         dc.setColor(0x444444, Graphics.COLOR_TRANSPARENT);
@@ -549,11 +531,9 @@ class SebatView extends WatchUi.View {
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.drawText(rX, rowY, Graphics.FONT_XTINY, "Forerunner 165", Graphics.TEXT_JUSTIFY_RIGHT);
 
-        rowY += 38;
-        dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(CX, rowY, Graphics.FONT_XTINY, "Tekan START untuk ubah", Graphics.TEXT_JUSTIFY_CENTER);
-        rowY += 18;
-        dc.drawText(CX, rowY, Graphics.FONT_XTINY, "pengaturan atau Reset data", Graphics.TEXT_JUSTIFY_CENTER);
+        rowY += 34;
+        dc.setColor(0x55AAFF, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(CX, rowY, Graphics.FONT_XTINY, "START: Ubah / Reset Data", Graphics.TEXT_JUSTIFY_CENTER);
 
         dc.setColor(0x444444, Graphics.COLOR_TRANSPARENT);
         dc.drawText(CX, 301, Graphics.FONT_XTINY, "Swipe atas/bawah ganti hal.", Graphics.TEXT_JUSTIFY_CENTER);
